@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "react-test": "react-scripts test",
+    "_test": "export NODE_ENV=test",
+    "_dev": "export NODE_ENV=development",
+    "_prod": "export NODE_ENV=production",
+    "start": "npm run _dev && react-scripts start",
+    "build": "npm run _prod && react-scripts build",
+    "react-test": "npm run _test && react-scripts test",
     "eject": "react-scripts eject",
-    "node-test": "mocha --require @babel/register src/_tests/**/*.js"
+    "node-test": "npm run _test && mocha --require @babel/register src/_tests/**/*.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -19,6 +22,7 @@
     "not op_mini all"
   ],
   "dependencies": {
+    "axios": "^0.18.0",
     "prop-types": "^15.6.2",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",

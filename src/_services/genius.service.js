@@ -1,8 +1,11 @@
 import * as apiKeys from "../_config/api-keys";
 import axios from "axios";
 
-const BASE_URL = "https://api.genius.com/";
-
+var BASE_URL = "https://api.genius.com/";
+if (process.env.NODE_ENV === "development") {
+  BASE_URL = `https://cors-anywhere.herokuapp.com/${BASE_URL}`;
+}
+console.log(BASE_URL);
 /*
 Genius API - https://docs.genius.com
 Only GET API exposed
@@ -19,17 +22,29 @@ class Genius {
     const { url, qs } = options;
     const axiosReq = axios.create({
       baseURL: BASE_URL,
-      timeout: 1000,
+      // timeout: 1000,
       headers: {
         Authorization: `Bearer ${this.at}`,
         "Content-Type": "application/json"
       }
     });
 
-    return axiosReq.get(`/${url}`, {
-      params: qs
-    });
+    return axiosReq
+      .get(`/${url}`, {
+        params: qs
+      })
+      .then(response => {
+        let payload = {
+          status: response.status,
+          data: response.data.response
+        };
+        return payload;
+      });
   }
+
+  // requestData(options, callback) {
+  //   return this.request(options, callback);
+  // }
 
   getAnnotation(id, options) {
     let request = {
@@ -100,15 +115,5 @@ class Genius {
     return this.request(request);
   }
 }
-
-// var genius = new Genius();
-// genius
-//   .searchSong("HUMBLE")
-//   .then(data => {
-//     console.log(data.response);
-//   })
-//   .catch(err => {
-//     console.log(err);
-//   });
 
 export default Genius;

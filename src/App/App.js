@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 import { HomePage } from "../HomePage";
-import Genius from "./_services/genius.service";
+import Genius from "../_services/genius.service";
 
 // start Genius API
 const genius = new Genius();
@@ -24,7 +24,11 @@ class App extends Component {
               </li>
             </ul>
           </nav>
-          <Route path="/" exact component={HomePage} />
+          <Route
+            path="/"
+            exact
+            render={props => <HomePage {...props} geniusApi={genius} />}
+          />
           <Route path="/about" component={About} />
         </React.Fragment>
       </Router>

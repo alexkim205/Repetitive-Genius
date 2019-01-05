@@ -10,9 +10,9 @@ const sample = {
 
 const genius = new Genius();
 
-const handleExpectations = response => {
-  expect(response.status).to.equal(200);
-  expect(response).to.be.a("object");
+const handleExpectations = data => {
+  expect(data.status).to.equal(200);
+  expect(data).to.be.a("object");
 };
 
 describe("Genius API", () => {
