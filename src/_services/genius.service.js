@@ -1,6 +1,5 @@
 import * as apiKeys from "../_config/api-keys";
-import https from "https";
-import querystring from "querystring";
+import axios from "axios";
 
 const BASE_URL = "https://api.genius.com/";
 
@@ -17,36 +16,18 @@ class Genius {
   }
 
   request(options, callback) {
-    return new Promise((resolve, reject) => {
-      // select http or https module, depending on reqested url
-      const { url, qs } = options;
-      const queries = querystring.stringify(qs);
-      const defaultOptions = {
-        path: `/${url}?${queries}`,
-        headers: {
-          Authorization: `Bearer ${this.at}`,
-          "Content-Type": "application/json"
-        }
-      };
-      const request = https.get(BASE_URL, defaultOptions, response => {
-        // handle http errors
-        if (response.statusCode !== 200) {
-          var payload = {
-            error: response.statusMessage,
-            status: response.statusCode
-          };
-          reject(payload);
-        }
-        // populate temporary data holder and parse at end
-        var body = "";
-        response.on("data", chunk => (body += chunk));
-        response.on("end", () => {
-          var parsed = JSON.parse(body);
-          resolve(parsed);
-        });
-      });
-      // handle connection errors of the request
-      request.on("error", err => reject(err));
+    const { url, qs } = options;
+    const axiosReq = axios.create({
+      baseURL: BASE_URL,
+      timeout: 1000,
+      headers: {
+        Authorization: `Bearer ${this.at}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    return axiosReq.get(`/${url}`, {
+      params: qs
     });
   }
 
@@ -79,10 +60,10 @@ class Genius {
   }
 
   getArtist(id, options) {
-    let defaultOptions = {
-      // per_page: '',
-      // page: '',
-    };
+    // let defaultOptions = {
+    //   // per_page: '',
+    //   // page: '',
+    // };
     let request = {
       url: `artists/${id}`,
       qs: { ...this.defaultTextFormat, ...options }

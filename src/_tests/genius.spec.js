@@ -1,9 +1,5 @@
-import chai, {expect} from "chai";
+import { expect } from "chai";
 import Genius from "../_services/genius.service";
-// const chai = require("chai");
-// const Genius = require("../_services/genius.service");
-// const expect = chai.expect;
-// import Genius from "../_services/genius.service";
 
 const sample = {
   id: 2332455,
@@ -14,10 +10,9 @@ const sample = {
 
 const genius = new Genius();
 
-const handleExpectations = data => {
-  expect(data.meta.status).to.equal(200);
-  expect(data).to.be.a("object");
-  expect(data).to.have.property("response");
+const handleExpectations = response => {
+  expect(response.status).to.equal(200);
+  expect(response).to.be.a("object");
 };
 
 describe("Genius API", () => {
