@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
-const Index = () => <h2>Home</h2>;
+import { HomePage } from "../HomePage";
+import Genius from "./_services/genius.service";
+
+// start Genius API
+const genius = new Genius();
+
 const About = () => <h2>About</h2>;
 
 class App extends Component {
@@ -19,7 +24,7 @@ class App extends Component {
               </li>
             </ul>
           </nav>
-          <Route path="/" exact component={Index} />
+          <Route path="/" exact component={HomePage} />
           <Route path="/about" component={About} />
         </React.Fragment>
       </Router>
@@ -27,4 +32,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export { App };

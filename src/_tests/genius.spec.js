@@ -1,6 +1,8 @@
-const chai = require("chai");
-const Genius = require("../_services/genius.service");
-const expect = chai.expect;
+import chai, {expect} from "chai";
+import Genius from "../_services/genius.service";
+// const chai = require("chai");
+// const Genius = require("../_services/genius.service");
+// const expect = chai.expect;
 // import Genius from "../_services/genius.service";
 
 const sample = {

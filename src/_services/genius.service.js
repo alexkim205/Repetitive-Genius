@@ -1,9 +1,6 @@
-// import * as apiKeys from "../_config/api-keys";
-// import https from "https";
-// import querystring from "querystring";
-const apiKeys = require("../_config/api-keys");
-const https = require("https");
-const querystring = require("querystring");
+import * as apiKeys from "../_config/api-keys";
+import https from "https";
+import querystring from "querystring";
 
 const BASE_URL = "https://api.genius.com/";
 
@@ -133,4 +130,4 @@ class Genius {
 //     console.log(err);
 //   });
 
-module.exports = Genius;
+export default Genius;
