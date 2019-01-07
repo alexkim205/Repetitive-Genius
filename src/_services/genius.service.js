@@ -1,15 +1,13 @@
 import * as apiKeys from "../_config/api-keys";
 import axios from "axios";
+import { corsHelper } from "../_helpers";
 
-var BASE_URL = "https://api.genius.com/";
-if (process.env.NODE_ENV === "development") {
-  BASE_URL = `https://cors-anywhere.herokuapp.com/${BASE_URL}`;
-}
-console.log(BASE_URL);
 /*
 Genius API - https://docs.genius.com
 Only GET API exposed
 */
+
+var BASE_URL = corsHelper("https://api.genius.com/");
 
 class Genius {
   constructor() {
@@ -116,4 +114,4 @@ class Genius {
   }
 }
 
-export default Genius;
+export { Genius };

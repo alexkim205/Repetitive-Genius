@@ -1,5 +1,6 @@
 /* generated with https://type-scale.com/ */
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:600|Open+Sans:400');
+@import url('https://fonts.googleapis.com/css?family=Spectral:500');
 @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro');
 
 html {
@@ -15,6 +16,8 @@ body {
 }
 
 p {
+  font-family: 'Spectral', sans-serif;
+  font-size: 1.1em;
   margin-bottom: 1.250em;
 }
 
@@ -25,6 +28,7 @@ h4,
 h5 {
   margin: 1.250em 0 0.64em;
   font-family: 'Open Sans', sans-serif;
+  color: #1C2331;
   font-weight: 600;
   line-height: 1.2;
 }

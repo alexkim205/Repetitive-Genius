@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 import { HomePage } from "../HomePage";
-import Genius from "../_services/genius.service";
+import { Genius } from "../_services";
 
 // start Genius API
 const genius = new Genius();
@@ -14,16 +14,6 @@ class App extends Component {
     return (
       <Router>
         <React.Fragment>
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/about">About</Link>
-              </li>
-            </ul>
-          </nav>
           <Route
             path="/"
             exact
