@@ -9,8 +9,26 @@ import { SongTile } from "../components";
 
 import { Genius, getSongLyrics } from "../_services";
 
+const StyledJumbotron = styled(Jumbotron)`
+  text-align: center;
+`;
+const SearchContainer = styled.div`
+  max-width: 450px;
+  margin: 0 auto;
+  text-align: left;
+`;
+const Graph = styled.div`
+  background-color: #aa66cc;
+  padding: 1em;
+  code {color: white;}
+`;
 const Lyrics = styled.div`
-  white-space: pre-wrap;
+  background-color: #4285f4;
+  padding: 1em;
+  code {color: white;}
+`;
+const CenteredLoader = styled(Loader)`
+  margin: 0 auto;
 `;
 
 class HomePage extends Component {
@@ -135,25 +153,33 @@ class HomePage extends Component {
 
     return (
       <Fragment>
-        <Jumbotron>
+        <StyledJumbotron>
           <h1>Repetitive Genius</h1>
           <p className="lead">visualizing repetition in our music</p>
-          <hr />
-          <p>inspired by SongSim</p>
-        </Jumbotron>
+          {/* <hr /> */}
+          <SearchContainer>
+            <AsyncSelect
+              cacheOptions
+              onChange={this._handleChange}
+              loadOptions={this.getSongList}
+              onInputChange={this._handleInputChange}
+            />
+          </SearchContainer>
+          {/* <p>inspired by SongSim</p> */}
+        </StyledJumbotron>
         <Container>
           <Row>
             {/* error */}
             <Col lg={12}>{error && <p>{error.message}</p>}</Col>
             {/* search */}
-            <Col lg={12}>
+            {/* <Col lg={12}>
               <AsyncSelect
                 cacheOptions
                 onChange={this._handleChange}
                 loadOptions={this.getSongList}
                 onInputChange={this._handleInputChange}
               />
-            </Col>
+            </Col> */}
             {/* album/song art + info */}
             <Col lg={12}>
               {!songInfoIsLoading && queriedSong && (
@@ -164,13 +190,15 @@ class HomePage extends Component {
           <Row>
             {/* graph */}
             <Col lg={12} xl={6}>
-              <code>Graph goes here</code>
+              <Graph>
+                <code>Graph goes here</code>
+              </Graph>
             </Col>
             {/* lyrics */}
             <Col lg={12} xl={6}>
               <Lyrics>
                 {lyricsAreLoading ? (
-                  <Loader type="CradleLoader" height="100" width="100" />
+                  <CenteredLoader type="ThreeDots" color="white" height="100" width="100" />
                 ) : (
                   <Fragment>
                     {lyrics &&

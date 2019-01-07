@@ -27,6 +27,10 @@ const StyledMedia = styled.div`
   }
   .title {
     padding: 1em 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
     h2 {
       margin: 0 0 0.3em 0;
     }
