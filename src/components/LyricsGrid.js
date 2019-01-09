@@ -122,7 +122,7 @@ class LyricsGrid extends Component {
 
     // background color
     svg.appendChild(
-      _makePoint('rect', { width: '100%', height: '100%', fill: '#fff' }),
+      _makePoint('rect', { width: '100%', height: '100%', fill: '#000' }),
     );
 
     // draw each pixel
