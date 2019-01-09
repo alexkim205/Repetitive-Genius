@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component} from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -16,7 +16,7 @@ const StyledContainer = styled.div`
   .featuredArtists {
     display: flex;
     flex-wrap: wrap;
-    align-content: center;
+    justify-content: center;
     padding: 0.5em;
   }
   @media ${device.tablet} {
@@ -45,22 +45,22 @@ const ArtistCircle = styled.div`
   }
 `;
 const PrimaryArtistCircle = styled(ArtistCircle)`
-  width: 110px;
-  height: 110px;
+  width: 100px;
+  height: 100px;
   border: 2px #1c2331 dashed;
   opacity: 1;
 
   img {
-    width: 110px;
-    height: 110px;
+    width: 100px;
+    height: 100px;
   }
 
   @media ${device.laptop} {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     img {
-      width: 80px;
-      height: 80px;
+      width: 70px;
+      height: 70px;
     }
   }
 `;
@@ -85,13 +85,13 @@ const FeaturedArtistCircle = styled(ArtistCircle)`
   }
 `;
 
-const toSentence = arr => {
-  return (
-    arr.slice(0, -2).join(", ") +
-    (arr.slice(0, -2).length ? ", " : "") +
-    arr.slice(-2).join(" and ")
-  );
-};
+// const toSentence = arr => {
+//   return (
+//     arr.slice(0, -2).join(", ") +
+//     (arr.slice(0, -2).length ? ", " : "") +
+//     arr.slice(-2).join(" and ")
+//   );
+// };
 
 class Artists extends Component {
   render() {

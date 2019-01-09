@@ -1,13 +1,19 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Row, Col } from "reactstrap";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { SongPills, Artists } from "./";
 import { device } from "../_styles/breakpoints";
+import * as Vibrant from "node-vibrant";
 
 const StyledMedia = styled.div`
   display: flex;
+  transition: border-top 1s ease;
+  border-top: 10px ${props => props.topBarColor} solid;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  margin-bottom: 50px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
   @media ${device.mobileL} {
     flex-direction: column;
@@ -17,20 +23,29 @@ const StyledMedia = styled.div`
   .album-art {
     display: flex;
     align-items: center;
-    padding: 1em;
+    padding: 2em;
     img {
-      border: 2px #1c2331 solid;
+      // border: 2px #1c2331 solid;
       width: 100%;
       min-width: 235px;
       height: auto;
     }
+
+  }
+  @media ${device.laptop} {
+    .album-art {
+      padding: 1em;
+      img {
+        width: 240px;
+      }
+    }
   }
   .title {
-    padding: 1em 0;
+    padding: 1.1em 0.5em;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    
+
     h2 {
       margin: 0 0 0.3em 0;
     }
@@ -58,8 +73,9 @@ const StyledMedia = styled.div`
     margin: 0.5em 0 0.3em;
   }
   .artists {
-    margin: 0.5em 0 0.3em;
+    margin: 1em 0 0.3em;
     @media ${device.mobileL} {
+      margin: 0.5em 0 0.3em;
       width: 250px;
       text-align: center;
     }
@@ -67,12 +83,39 @@ const StyledMedia = styled.div`
 `;
 
 class SongTile extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      palette: null
+    };
+
+    this._getVibrantColor = this._getVibrantColor.bind(this);
+  }
+
+  componentDidMount() {
+    this._getVibrantColor(this.props.queriedSong.albumArt);
+  }
+
+  _getVibrantColor(imgPath) {
+    Vibrant.from(imgPath)
+      .getPalette()
+      .then(palette => {
+        this.setState({ palette });
+      })
+      .catch(err => console.error(err));
+  }
+
   render() {
     const { queriedSong } = this.props;
+    const vc = this.state.palette ? this.state.palette.Vibrant : null;
+    const topBarColor = vc
+      ? `rgb(${vc._rgb[0]},${vc._rgb[1]},${vc._rgb[2]})`
+      : "#0275d8";
+
     return (
       <Fragment>
         {queriedSong && (
-          <StyledMedia>
+          <StyledMedia topBarColor={topBarColor}>
             <div className="album-art">
               <LazyLoadImage
                 effect="blur"

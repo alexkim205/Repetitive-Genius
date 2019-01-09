@@ -5,7 +5,7 @@ import styled from "styled-components";
 import AsyncSelect from "react-select/lib/Async";
 import Loader from "react-loader-spinner";
 import { Container, Row, Col, Jumbotron } from "reactstrap";
-import { SongTile } from "../components";
+import { SongTile, LyricsGrid } from "../components";
 
 import { Genius, getSongLyrics } from "../_services";
 
@@ -20,12 +20,16 @@ const SearchContainer = styled.div`
 const Graph = styled.div`
   background-color: #aa66cc;
   padding: 1em;
-  code {color: white;}
+  code {
+    color: white;
+  }
 `;
 const Lyrics = styled.div`
   background-color: #4285f4;
   padding: 1em;
-  code {color: white;}
+  code {
+    color: white;
+  }
 `;
 const CenteredLoader = styled(Loader)`
   margin: 0 auto;
@@ -40,7 +44,9 @@ class HomePage extends Component {
       lyrics: [],
       url: "",
       lyricsAreLoading: false,
+      lyricsAreLoaded: false,
       songInfoIsLoading: false,
+      songInfoIsLoaded: false,
       typing: false,
       typingTimeout: 0,
       error: null
@@ -50,10 +56,6 @@ class HomePage extends Component {
     this._handleInputChange = this._handleInputChange.bind(this);
     this._handleChange = this._handleChange.bind(this);
   }
-
-  // getSongLyrics(url) {
-
-  // }
 
   getSongList(query, callback) {
     const { geniusApi } = this.props;
@@ -102,6 +104,7 @@ class HomePage extends Component {
         this.setState({
           error: null,
           songInfoIsLoading: false,
+          songInfoIsLoaded: true,
           queriedSong: {
             title: song.title,
             titleWFeature: song.title_with_featured,
@@ -124,15 +127,32 @@ class HomePage extends Component {
         });
         console.log(this.state.queriedSong);
       })
-      .catch(error => this.setState({ error, songInfoIsLoading: false }));
+      .catch(error =>
+        this.setState({
+          error,
+          songInfoIsLoading: false,
+          songInfoIsLoaded: false
+        })
+      );
 
     // request lyrics
     _this.setState({ lyricsAreLoading: true });
     getSongLyrics(selected.url)
       .then(lyrics => {
-        _this.setState({ error: null, lyrics, lyricsAreLoading: false });
+        _this.setState({
+          error: null,
+          lyrics,
+          lyricsAreLoading: false,
+          lyricsAreLoaded: true
+        });
       })
-      .catch(error => this.setState({ error, lyricsAreLoading: false }));
+      .catch(error =>
+        this.setState({
+          error,
+          lyricsAreLoading: false,
+          lyricsAreLoaded: false
+        })
+      );
   }
 
   _handleInputChange(newValue) {
@@ -146,7 +166,9 @@ class HomePage extends Component {
     const {
       lyrics,
       lyricsAreLoading,
+      lyricsAreLoaded,
       songInfoIsLoading,
+      songInfoIsLoaded,
       error,
       queriedSong
     } = this.state;
@@ -155,7 +177,16 @@ class HomePage extends Component {
       <Fragment>
         <StyledJumbotron>
           <h1>Repetitive Genius</h1>
-          <p className="lead">visualizing repetition in our music</p>
+          <p className="lead">
+            visualizing repetition in our music, inspired by{" "}
+            <a
+              href="https://github.com/colinmorris/SongSim"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              SongSim
+            </a>
+          </p>
           {/* <hr /> */}
           <SearchContainer>
             <AsyncSelect
@@ -171,18 +202,9 @@ class HomePage extends Component {
           <Row>
             {/* error */}
             <Col lg={12}>{error && <p>{error.message}</p>}</Col>
-            {/* search */}
-            {/* <Col lg={12}>
-              <AsyncSelect
-                cacheOptions
-                onChange={this._handleChange}
-                loadOptions={this.getSongList}
-                onInputChange={this._handleInputChange}
-              />
-            </Col> */}
             {/* album/song art + info */}
             <Col lg={12}>
-              {!songInfoIsLoading && queriedSong && (
+              {!songInfoIsLoading && songInfoIsLoaded && queriedSong && (
                 <SongTile queriedSong={queriedSong} />
               )}
             </Col>
@@ -191,15 +213,22 @@ class HomePage extends Component {
             {/* graph */}
             <Col lg={12} xl={6}>
               <Graph>
-                <code>Graph goes here</code>
+                {!lyricsAreLoading && lyricsAreLoaded ? (
+                  <LyricsGrid lyrics={lyrics} />
+                ) : (
+                  <CenteredLoader
+                    type="ThreeDots"
+                    color="white"
+                    height="100"
+                    width="100"
+                  />
+                )}
               </Graph>
             </Col>
             {/* lyrics */}
             <Col lg={12} xl={6}>
               <Lyrics>
-                {lyricsAreLoading ? (
-                  <CenteredLoader type="ThreeDots" color="white" height="100" width="100" />
-                ) : (
+                {!lyricsAreLoading && lyricsAreLoaded ? (
                   <Fragment>
                     {lyrics &&
                       lyrics.map((verse, i) => (
@@ -209,6 +238,13 @@ class HomePage extends Component {
                         </Fragment>
                       ))}
                   </Fragment>
+                ) : (
+                  <CenteredLoader
+                    type="ThreeDots"
+                    color="white"
+                    height="100"
+                    width="100"
+                  />
                 )}
               </Lyrics>
             </Col>
