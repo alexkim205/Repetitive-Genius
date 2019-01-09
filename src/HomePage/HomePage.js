@@ -216,12 +216,16 @@ class HomePage extends Component {
                 {!lyricsAreLoading && lyricsAreLoaded ? (
                   <LyricsGrid lyrics={lyrics} />
                 ) : (
-                  <CenteredLoader
-                    type="ThreeDots"
-                    color="white"
-                    height="100"
-                    width="100"
-                  />
+                  <Fragment>
+                    {lyricsAreLoading && (
+                      <CenteredLoader
+                        type="ThreeDots"
+                        color="white"
+                        height="100"
+                        width="100"
+                      />
+                    )}
+                  </Fragment>
                 )}
               </Graph>
             </Col>
@@ -239,12 +243,16 @@ class HomePage extends Component {
                       ))}
                   </Fragment>
                 ) : (
-                  <CenteredLoader
-                    type="ThreeDots"
-                    color="white"
-                    height="100"
-                    width="100"
-                  />
+                  <Fragment>
+                    {lyricsAreLoading && (
+                      <CenteredLoader
+                        type="ThreeDots"
+                        color="white"
+                        height="100"
+                        width="100"
+                      />
+                    )}
+                  </Fragment>
                 )}
               </Lyrics>
             </Col>

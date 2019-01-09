@@ -11,6 +11,7 @@ class LyricsGrid extends Component {
       count: null,
       matrix: null
     };
+    this.svgRef = React.createRef();
 
     this._makeCorpus = this._makeCorpus.bind(this);
     this.drawGrid = this.drawGrid.bind(this);
@@ -84,38 +85,43 @@ class LyricsGrid extends Component {
   }
 
   drawGrid() {
-    const node = this.node;
+    const node = this.svgRef.current;
     const { matrix, lyricsCorpus, count } = this.state;
+    console.log(this.state);
 
-    var pixel = 2,
-      width = pixel * lyricsCorpus.length,
-      height = pixel * lyricsCorpus.length;
+    var side = 800,
+      pixel = side / lyricsCorpus.length,
+      width = side,
+      height = side;
 
     // Scales
     var _c = d3
       .scaleSequential(d3.interpolateRainbow)
       .domain(Object.entries(count).map(([k, v]) => v.index));
+    console.log(lyricsCorpus.map((v, i) => i));
     var _x = d3
       .scaleBand()
       .domain(lyricsCorpus.map((v, i) => i))
       .rangeRound([0, width]);
-    // console.log(_c);
-    // console.log(_x);
-    console.log(this.state);
 
-    d3.select(node)
-      .select("canvas")
-      .remove();
+    // initialize svg
+    var svg = node;
+    var svgNS = svg.namespaceURI;
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
 
-    var canvas = d3
-      .select(node)
-      .append("canvas")
-      .attr("width", width)
-      .attr("height", height);
+    const _makePoint = (n, v) => {
+      n = document.createElementNS(svgNS, n);
+      for (var p in v) {
+        n.setAttributeNS(null, p, v[p]);
+      }
+      return n;
+    };
 
-    var ctx = canvas.node().getContext("2d");
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, width, height);
+    // background color
+    svg.appendChild(
+      _makePoint("rect", { width: "100%", height: "100%", fill: "#fff" })
+    );
 
     // draw each pixel
     for (const [_ri, row] of matrix.entries()) {
@@ -124,8 +130,15 @@ class LyricsGrid extends Component {
         if (i === 0) {
           continue;
         }
-        ctx.fillStyle = _c(i);
-        ctx.fillRect(_x(r), _x(c), pixel, pixel);
+        svg.appendChild(
+          _makePoint("rect", {
+            x: _x(r),
+            y: _x(c),
+            width: pixel,
+            height: pixel,
+            fill: _c(i)
+          })
+        );
       }
     }
   }
@@ -140,9 +153,7 @@ class LyricsGrid extends Component {
   render() {
     return (
       <Fragment>
-        <div ref={node => (this.node = node)}>
-          <canvas />
-        </div>
+        <svg ref={this.svgRef} />
       </Fragment>
     );
   }
