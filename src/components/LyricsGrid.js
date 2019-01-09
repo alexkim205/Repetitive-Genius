@@ -3,6 +3,10 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import * as d3 from "d3";
 
+const StyledSvg = styled.svg`
+  width: 100%;
+`;
+
 class LyricsGrid extends Component {
   constructor(props) {
     super(props);
@@ -64,7 +68,6 @@ class LyricsGrid extends Component {
         if (lyricsCorpus[row] === lyricsCorpus[col]) {
           index = count[lyricsCorpus[row]].index;
         }
-        // console.log(index);
         // populate both halves
         matrix[row][col] = {
           r: row,
@@ -79,7 +82,6 @@ class LyricsGrid extends Component {
       }
     }
     this.setState({ lyricsCorpus, matrix, count }, () => {
-      // console.log(this.state);
       this.drawGrid();
     });
   }
@@ -87,21 +89,19 @@ class LyricsGrid extends Component {
   drawGrid() {
     const node = this.svgRef.current;
     const { matrix, lyricsCorpus, count } = this.state;
-    console.log(this.state);
 
-    var side = 800,
-      pixel = side / lyricsCorpus.length,
-      width = side,
-      height = side;
+    var side = 800, // final side length
+      pixel = 2,
+      width = 2 * lyricsCorpus.length,
+      height = 2 * lyricsCorpus.length;
 
     // Scales
     var _c = d3
       .scaleSequential(d3.interpolateRainbow)
       .domain(Object.entries(count).map(([k, v]) => v.index));
-    console.log(lyricsCorpus.map((v, i) => i));
     var _x = d3
       .scaleBand()
-      .domain(lyricsCorpus.map((v, i) => i))
+      .domain(d3.range(lyricsCorpus.length))
       .rangeRound([0, width]);
 
     // initialize svg
@@ -124,12 +124,10 @@ class LyricsGrid extends Component {
     );
 
     // draw each pixel
-    for (const [_ri, row] of matrix.entries()) {
-      for (const [_ci, col] of row.entries()) {
+    matrix.forEach(row => {
+      row.forEach(col => {
         const { r, c, i } = col;
-        if (i === 0) {
-          continue;
-        }
+        if (i === 0) return;
         svg.appendChild(
           _makePoint("rect", {
             x: _x(r),
@@ -139,21 +137,22 @@ class LyricsGrid extends Component {
             fill: _c(i)
           })
         );
-      }
-    }
+      });
+    });
+    // resize to final size
+    svg.setAttribute("width", side);
+    svg.setAttribute("height", side);
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
   }
 
   componentDidMount() {
-    this._makeCorpus(); // make lyrics corpus => array of words
+    this._makeCorpus(); // make lyrics corpus => array of words and render
   }
-  // componentDidUpdate() {
-  //   this.drawGrid();
-  // }
 
   render() {
     return (
       <Fragment>
-        <svg ref={this.svgRef} />
+        <StyledSvg ref={this.svgRef} />
       </Fragment>
     );
   }

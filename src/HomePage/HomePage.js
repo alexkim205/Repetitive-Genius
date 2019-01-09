@@ -5,7 +5,7 @@ import styled from "styled-components";
 import AsyncSelect from "react-select/lib/Async";
 import Loader from "react-loader-spinner";
 import { Container, Row, Col, Jumbotron } from "reactstrap";
-import { SongTile, LyricsGrid } from "../components";
+import { SongTile, LyricsGrid, Loading } from "../components";
 
 import { Genius, getSongLyrics } from "../_services";
 
@@ -209,30 +209,43 @@ class HomePage extends Component {
               )}
             </Col>
           </Row>
+        </Container>
+        <Container fluid>
           <Row>
             {/* graph */}
             <Col lg={12} xl={6}>
               <Graph>
-                {!lyricsAreLoading && lyricsAreLoaded ? (
+                <Loading
+                  isLoading={lyricsAreLoading}
+                  isLoaded={lyricsAreLoaded}
+                  loader={
+                    <CenteredLoader
+                      type="ThreeDots"
+                      color="white"
+                      height="100"
+                      width="100"
+                    />
+                  }
+                >
                   <LyricsGrid lyrics={lyrics} />
-                ) : (
-                  <Fragment>
-                    {lyricsAreLoading && (
-                      <CenteredLoader
-                        type="ThreeDots"
-                        color="white"
-                        height="100"
-                        width="100"
-                      />
-                    )}
-                  </Fragment>
-                )}
+                </Loading>
               </Graph>
             </Col>
             {/* lyrics */}
             <Col lg={12} xl={6}>
               <Lyrics>
-                {!lyricsAreLoading && lyricsAreLoaded ? (
+                <Loading
+                  isLoading={lyricsAreLoading}
+                  isLoaded={lyricsAreLoaded}
+                  loader={
+                    <CenteredLoader
+                      type="ThreeDots"
+                      color="white"
+                      height="100"
+                      width="100"
+                    />
+                  }
+                >
                   <Fragment>
                     {lyrics &&
                       lyrics.map((verse, i) => (
@@ -242,18 +255,7 @@ class HomePage extends Component {
                         </Fragment>
                       ))}
                   </Fragment>
-                ) : (
-                  <Fragment>
-                    {lyricsAreLoading && (
-                      <CenteredLoader
-                        type="ThreeDots"
-                        color="white"
-                        height="100"
-                        width="100"
-                      />
-                    )}
-                  </Fragment>
-                )}
+                </Loading>
               </Lyrics>
             </Col>
           </Row>
