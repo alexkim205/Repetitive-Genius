@@ -1,15 +1,15 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import styled from "styled-components";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { SongPills, Artists } from "./";
-import { device } from "../_styles/breakpoints";
-import * as Vibrant from "node-vibrant";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { SongPills, Artists } from './';
+import { device } from '../_styles/breakpoints';
+import * as Vibrant from 'node-vibrant';
 
 const StyledMedia = styled.div`
   display: flex;
   transition: border-top 1s ease;
-  border-top: 10px ${props => props.topBarColor} solid;
+  border-top: 10px ${(props) => props.topBarColor} solid;
   border-bottom-left-radius: 2px;
   border-bottom-right-radius: 2px;
   margin-bottom: 50px;
@@ -30,7 +30,6 @@ const StyledMedia = styled.div`
       min-width: 235px;
       height: auto;
     }
-
   }
   @media ${device.laptop} {
     .album-art {
@@ -86,7 +85,7 @@ class SongTile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      palette: null
+      palette: null,
     };
 
     this._getVibrantColor = this._getVibrantColor.bind(this);
@@ -99,10 +98,10 @@ class SongTile extends Component {
   _getVibrantColor(imgPath) {
     Vibrant.from(imgPath)
       .getPalette()
-      .then(palette => {
+      .then((palette) => {
         this.setState({ palette });
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
   }
 
   render() {
@@ -110,26 +109,26 @@ class SongTile extends Component {
     const vc = this.state.palette ? this.state.palette.Vibrant : null;
     const topBarColor = vc
       ? `rgb(${vc._rgb[0]},${vc._rgb[1]},${vc._rgb[2]})`
-      : "#0275d8";
+      : '#0275d8';
 
     return (
       <Fragment>
         {queriedSong && (
           <StyledMedia topBarColor={topBarColor}>
-            <div className="album-art">
+            <div className='album-art'>
               <LazyLoadImage
-                effect="blur"
+                effect='blur'
                 src={queriedSong.albumArt}
-                alt="albumArt"
+                alt='albumArt'
               />
             </div>
-            <div className="flex-grow-1 title">
+            <div className='flex-grow-1 title'>
               <h2>{queriedSong.title}</h2>
               <h4> by {queriedSong.artists.primaryArtist}</h4>
-              <div className="pills">
+              <div className='pills'>
                 <SongPills pills={queriedSong.pills} />
               </div>
-              <div className="artists">
+              <div className='artists'>
                 <Artists artists={queriedSong.artists} />
               </div>
             </div>
@@ -141,7 +140,7 @@ class SongTile extends Component {
 }
 
 SongTile.propTypes = {
-  queriedSong: PropTypes.object.isRequired
+  queriedSong: PropTypes.object.isRequired,
 };
 
 export { SongTile };

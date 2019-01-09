@@ -1,8 +1,8 @@
-import React, { Component} from "react";
-import PropTypes from "prop-types";
-import styled from "styled-components";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { device } from "../_styles/breakpoints";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { device } from '../_styles/breakpoints';
 
 const StyledContainer = styled.div`
   margin: 0 0.3em;
@@ -27,7 +27,6 @@ const StyledContainer = styled.div`
   @media ${device.mobileL} {
     justify-content: center;
     .primaryArtist {
-      
     }
   }
 `;
@@ -98,16 +97,16 @@ class Artists extends Component {
     const { artists } = this.props;
     return (
       <StyledContainer>
-        <div className="primaryArtist">
+        <div className='primaryArtist'>
           <PrimaryArtistCircle>
-            <LazyLoadImage src={artists.artistArt} alt="artistArt" />
+            <LazyLoadImage src={artists.artistArt} alt='artistArt' />
           </PrimaryArtistCircle>
         </div>
-        <div className="featuredArtists">
+        <div className='featuredArtists'>
           {artists.featuredArtistsNames.length !== 0 &&
             artists.featuredArtistsArt.map((a, i) => (
               <FeaturedArtistCircle key={i}>
-                <LazyLoadImage effect="blur" src={a} alt="featuredArtistArt" />
+                <LazyLoadImage effect='blur' src={a} alt='featuredArtistArt' />
               </FeaturedArtistCircle>
             ))}
         </div>
@@ -117,7 +116,7 @@ class Artists extends Component {
 }
 
 Artists.propTypes = {
-  artists: PropTypes.object.isRequired
+  artists: PropTypes.object.isRequired,
 };
 
 export { Artists };

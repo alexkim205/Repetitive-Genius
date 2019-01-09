@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import styled from "styled-components";
-import { Badge } from "reactstrap";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+import { Badge } from 'reactstrap';
 
 const StyledBadge = styled(Badge)`
   margin: 0 0.15em;
@@ -14,8 +14,8 @@ const StyledBadge = styled(Badge)`
   }
 `;
 
-const abbreviateNumber = number => {
-  var SI_SYMBOL = ["", "k", "M", "G", "T", "P", "E"];
+const abbreviateNumber = (number) => {
+  var SI_SYMBOL = ['', 'k', 'M', 'G', 'T', 'P', 'E'];
   var tier = (Math.log10(number) / 3) | 0;
   if (tier === 0) return number;
   var suffix = SI_SYMBOL[tier];
@@ -31,28 +31,28 @@ class SongPills extends Component {
     return (
       <Fragment>
         {pills.hot && (
-          <StyledBadge color="danger" pill>
+          <StyledBadge color='danger' pill>
             Hot
           </StyledBadge>
         )}
-        <StyledBadge href={pills.appleMusic} color="secondary" pill>
+        <StyledBadge href={pills.appleMusic} color='secondary' pill>
           Apple Music
         </StyledBadge>
         {pills.media.length !== 0 &&
           pills.media.map((m, i) => {
             let provider, color, className;
             switch (m.provider) {
-              case "spotify":
-                provider = "Spotify";
-                color = "success";
+              case 'spotify':
+                provider = 'Spotify';
+                color = 'success';
                 break;
-              case "youtube":
-                provider = "Youtube";
-                color = "danger";
+              case 'youtube':
+                provider = 'Youtube';
+                color = 'danger';
                 break;
-              case "soundcloud":
-                provider = "SoundCloud";
-                className = "soundcloud-pill";
+              case 'soundcloud':
+                provider = 'SoundCloud';
+                className = 'soundcloud-pill';
                 break;
               default:
                 break;
@@ -63,16 +63,15 @@ class SongPills extends Component {
                 href={m.url}
                 color={color}
                 className={className}
-                pill
-              >
+                pill>
                 {provider}
               </StyledBadge>
             );
           })}
-        <StyledBadge href={pills.genius} color="warning" pill>
+        <StyledBadge href={pills.genius} color='warning' pill>
           Genius Lyrics
         </StyledBadge>
-        <StyledBadge color="info" pill>
+        <StyledBadge color='info' pill>
           {abbreviateNumber(pills.pageViews)} Page Views
         </StyledBadge>
       </Fragment>
@@ -81,7 +80,7 @@ class SongPills extends Component {
 }
 
 SongPills.propTypes = {
-  pills: PropTypes.object.isRequired
+  pills: PropTypes.object.isRequired,
 };
 
 export { SongPills };

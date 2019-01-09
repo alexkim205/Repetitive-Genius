@@ -1,13 +1,13 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import styled from "styled-components";
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
-import AsyncSelect from "react-select/lib/Async";
-import Loader from "react-loader-spinner";
-import { Container, Row, Col, Jumbotron } from "reactstrap";
-import { SongTile, LyricsGrid, Loading } from "../components";
+import AsyncSelect from 'react-select/lib/Async';
+import Loader from 'react-loader-spinner';
+import { Container, Row, Col, Jumbotron } from 'reactstrap';
+import { SongTile, LyricsGrid, Loading } from '../components';
 
-import { Genius, getSongLyrics } from "../_services";
+import { Genius, getSongLyrics } from '../_services';
 
 const StyledJumbotron = styled(Jumbotron)`
   text-align: center;
@@ -39,17 +39,17 @@ class HomePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: "",
+      query: '',
       queriedSong: null,
       lyrics: [],
-      url: "",
+      url: '',
       lyricsAreLoading: false,
       lyricsAreLoaded: false,
       songInfoIsLoading: false,
       songInfoIsLoaded: false,
       typing: false,
       typingTimeout: 0,
-      error: null
+      error: null,
     };
 
     this.getSongList = this.getSongList.bind(this);
@@ -70,21 +70,21 @@ class HomePage extends Component {
       typingTimeout: setTimeout(() => {
         geniusApi
           .searchSong(query)
-          .then(response => {
+          .then((response) => {
             if (response.status !== 200) {
-              throw new Error("Something went wrong ...");
+              throw new Error('Something went wrong ...');
             }
-            let options = response.data.hits.map(song => {
+            let options = response.data.hits.map((song) => {
               return {
                 value: song.result.id,
                 label: song.result.full_title,
-                url: song.result.url
+                url: song.result.url,
               };
             });
             callback(options);
           })
-          .catch(error => _this.setState({ error }));
-      }, 300)
+          .catch((error) => _this.setState({ error }));
+      }, 300),
     });
   }
 
@@ -96,9 +96,9 @@ class HomePage extends Component {
     _this.setState({ songInfoIsLoading: true });
     geniusApi
       .getSong(selected.value)
-      .then(response => {
+      .then((response) => {
         if (response.status !== 200) {
-          throw new Error("Something went wrong ...");
+          throw new Error('Something went wrong ...');
         }
         let song = response.data.song;
         this.setState({
@@ -113,45 +113,45 @@ class HomePage extends Component {
             artists: {
               primaryArtist: song.primary_artist.name,
               artistArt: song.primary_artist.image_url,
-              featuredArtistsNames: song.featured_artists.map(a => a.name),
-              featuredArtistsArt: song.featured_artists.map(a => a.image_url)
+              featuredArtistsNames: song.featured_artists.map((a) => a.name),
+              featuredArtistsArt: song.featured_artists.map((a) => a.image_url),
             },
             pills: {
               media: song.media,
               appleMusic: song.apple_music_player_url,
               genius: song.url,
               hot: song.stats.hot,
-              pageViews: song.stats.pageviews
-            }
-          }
+              pageViews: song.stats.pageviews,
+            },
+          },
         });
         console.log(this.state.queriedSong);
       })
-      .catch(error =>
+      .catch((error) =>
         this.setState({
           error,
           songInfoIsLoading: false,
-          songInfoIsLoaded: false
-        })
+          songInfoIsLoaded: false,
+        }),
       );
 
     // request lyrics
     _this.setState({ lyricsAreLoading: true });
     getSongLyrics(selected.url)
-      .then(lyrics => {
+      .then((lyrics) => {
         _this.setState({
           error: null,
           lyrics,
           lyricsAreLoading: false,
-          lyricsAreLoaded: true
+          lyricsAreLoaded: true,
         });
       })
-      .catch(error =>
+      .catch((error) =>
         this.setState({
           error,
           lyricsAreLoading: false,
-          lyricsAreLoaded: false
-        })
+          lyricsAreLoaded: false,
+        }),
       );
   }
 
@@ -169,21 +169,20 @@ class HomePage extends Component {
       lyricsAreLoaded,
       songInfoIsLoading,
       songInfoIsLoaded,
+      queriedSong,
       error,
-      queriedSong
     } = this.state;
 
     return (
       <Fragment>
         <StyledJumbotron>
           <h1>Repetitive Genius</h1>
-          <p className="lead">
-            visualizing repetition in our music, inspired by{" "}
+          <p className='lead'>
+            visualizing repetition in our music, inspired by{' '}
             <a
-              href="https://github.com/colinmorris/SongSim"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+              href='https://github.com/colinmorris/SongSim'
+              target='_blank'
+              rel='noopener noreferrer'>
               SongSim
             </a>
           </p>
@@ -196,7 +195,6 @@ class HomePage extends Component {
               onInputChange={this._handleInputChange}
             />
           </SearchContainer>
-          {/* <p>inspired by SongSim</p> */}
         </StyledJumbotron>
         <Container>
           <Row>
@@ -220,13 +218,12 @@ class HomePage extends Component {
                   isLoaded={lyricsAreLoaded}
                   loader={
                     <CenteredLoader
-                      type="ThreeDots"
-                      color="white"
-                      height="100"
-                      width="100"
+                      type='ThreeDots'
+                      color='white'
+                      height='100'
+                      width='100'
                     />
-                  }
-                >
+                  }>
                   <LyricsGrid lyrics={lyrics} />
                 </Loading>
               </Graph>
@@ -239,13 +236,12 @@ class HomePage extends Component {
                   isLoaded={lyricsAreLoaded}
                   loader={
                     <CenteredLoader
-                      type="ThreeDots"
-                      color="white"
-                      height="100"
-                      width="100"
+                      type='ThreeDots'
+                      color='white'
+                      height='100'
+                      width='100'
                     />
-                  }
-                >
+                  }>
                   <Fragment>
                     {lyrics &&
                       lyrics.map((verse, i) => (
@@ -266,7 +262,7 @@ class HomePage extends Component {
 }
 
 HomePage.propTypes = {
-  geniusApi: PropTypes.instanceOf(Genius)
+  geniusApi: PropTypes.instanceOf(Genius),
 };
 
 export { HomePage };

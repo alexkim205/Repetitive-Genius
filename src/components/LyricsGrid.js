@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from "react";
-import styled from "styled-components";
-import PropTypes from "prop-types";
-import * as d3 from "d3";
+import React, { Component, Fragment } from 'react';
+import styled from 'styled-components';
+import PropTypes from 'prop-types';
+import * as d3 from 'd3';
 
 const StyledSvg = styled.svg`
   width: 100%;
@@ -13,7 +13,7 @@ class LyricsGrid extends Component {
     this.state = {
       lyricsCorpus: null,
       count: null,
-      matrix: null
+      matrix: null,
     };
     this.svgRef = React.createRef();
 
@@ -30,9 +30,9 @@ class LyricsGrid extends Component {
 
     // parse lyrics
     const lyricsCorpus = lyrics
-      .join(" ") // join string
-      .replace(/ *\[[^\]]*]|[()]/g, "") // remove everything btwn [] or remove just ()'s
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "") // remove punctuation
+      .join(' ') // join string
+      .replace(/ *\[[^\]]*]|[()]/g, '') // remove everything btwn [] or remove just ()'s
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '') // remove punctuation
       .toLowerCase() // all words to lc
       .trim() // trim beginning and end of string
       .split(/\s+/); // split by whitespace
@@ -44,7 +44,9 @@ class LyricsGrid extends Component {
     for (let i = 0; i < lyricsCorpus.length; i++) {
       count[lyricsCorpus[i]] = {
         index: uniqueIndex++,
-        count: count[lyricsCorpus[i]] ? parseInt(count[lyricsCorpus[i]]) + 1 : 0
+        count: count[lyricsCorpus[i]]
+          ? parseInt(count[lyricsCorpus[i]]) + 1
+          : 0,
       };
     }
 
@@ -72,12 +74,12 @@ class LyricsGrid extends Component {
         matrix[row][col] = {
           r: row,
           c: col,
-          i: index
+          i: index,
         };
         matrix[col][row] = {
           r: col,
           c: row,
-          i: index
+          i: index,
         };
       }
     }
@@ -107,8 +109,8 @@ class LyricsGrid extends Component {
     // initialize svg
     var svg = node;
     var svgNS = svg.namespaceURI;
-    svg.setAttribute("width", width);
-    svg.setAttribute("height", height);
+    svg.setAttribute('width', width);
+    svg.setAttribute('height', height);
 
     const _makePoint = (n, v) => {
       n = document.createElementNS(svgNS, n);
@@ -120,29 +122,29 @@ class LyricsGrid extends Component {
 
     // background color
     svg.appendChild(
-      _makePoint("rect", { width: "100%", height: "100%", fill: "#fff" })
+      _makePoint('rect', { width: '100%', height: '100%', fill: '#fff' }),
     );
 
     // draw each pixel
-    matrix.forEach(row => {
-      row.forEach(col => {
+    matrix.forEach((row) => {
+      row.forEach((col) => {
         const { r, c, i } = col;
         if (i === 0) return;
         svg.appendChild(
-          _makePoint("rect", {
+          _makePoint('rect', {
             x: _x(r),
             y: _x(c),
             width: pixel,
             height: pixel,
-            fill: _c(i)
-          })
+            fill: _c(i),
+          }),
         );
       });
     });
     // resize to final size
-    svg.setAttribute("width", side);
-    svg.setAttribute("height", side);
-    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.setAttribute('width', side);
+    svg.setAttribute('height', side);
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
   }
 
   componentDidMount() {
@@ -159,7 +161,7 @@ class LyricsGrid extends Component {
 }
 
 LyricsGrid.propTypes = {
-  lyrics: PropTypes.array.isRequired
+  lyrics: PropTypes.array.isRequired,
 };
 
 export { LyricsGrid };

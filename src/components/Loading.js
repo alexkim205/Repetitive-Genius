@@ -1,7 +1,7 @@
-import React, { Fragment } from "react";
-import PropTypes from "prop-types";
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
 
-const Loading = props => {
+const Loading = (props) => {
   const { isLoading, isLoaded, loader } = props;
   return (
     <Fragment>
@@ -17,7 +17,7 @@ const Loading = props => {
 Loading.propTypes = {
   isLoading: PropTypes.bool.isRequired,
   isLoaded: PropTypes.bool.isRequired,
-  loader: PropTypes.element.isRequired
+  loader: PropTypes.element.isRequired,
 };
 
 export { Loading };
