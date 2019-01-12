@@ -26,6 +26,7 @@ class HomePage extends Component {
       queriedSong: null,
       lyrics: [],
       lyricsCorpus: [],
+      wordRefs: [],
       origToMini: {}, // map original to slimmed lyrics; used for mapping grid to lyrics
       url: '',
       lyricsAreLoading: false,
@@ -37,7 +38,6 @@ class HomePage extends Component {
       typingTimeout: 0,
       error: null,
     };
-    this.wordRefs = [];
 
     this.getSongList = this.getSongList.bind(this);
     this.createWordRef = this.createWordRef.bind(this);
@@ -141,6 +141,7 @@ class HomePage extends Component {
 
         let corpus = lyrics.join(' ').split(' ');
         var origToMini = {}; // map original to slimmed lyrics
+        var miniToOrig = {}; // map original to slimmed lyrics
         var shortCounter = 0; // orig index -> shortCounter
         var bracketIsOpen = false;
         for (let i = 0; i < corpus.length; i++) {
@@ -165,15 +166,24 @@ class HomePage extends Component {
             original: word,
             minified: lyricsCorpus[shortCounter],
             o_i: i,
-            m_i: shortCounter++,
+            m_i: shortCounter,
           };
+          miniToOrig[shortCounter] = {
+            original: word,
+            minified: lyricsCorpus[shortCounter],
+            o_i: i,
+            m_i: shortCounter,
+          };
+          shortCounter++
         }
 
         _this.setState({
           error: null,
           lyrics,
           lyricsCorpus,
+          wordRefs: [],
           origToMini,
+          miniToOrig,
           lyricsAreLoading: false,
           lyricsAreLoaded: true,
         });
@@ -189,20 +199,23 @@ class HomePage extends Component {
 
   _handleInputChange(newValue) {
     // const query = newValue.replace(/\W/g, "");
-    const query = newValue;
-    this.setState({ query });
-    return query;
+    this.setState({ query: newValue });
+    return newValue;
   }
 
   createWordRef = (ref) => {
-    this.wordRefs.push(ref);
+    var newArray = this.state.wordRefs
+    newArray.push(ref)
+    this.setState({ wordRefs: newArray });
   };
 
   render() {
     const {
       lyrics,
       lyricsCorpus,
+      wordRefs,
       origToMini,
+      miniToOrig,
       lyricsAreLoading,
       lyricsAreLoaded,
       songInfoIsLoading,
@@ -254,9 +267,10 @@ class HomePage extends Component {
                 lyrics={lyrics}
                 lyricsCorpus={lyricsCorpus}
                 origToMini={origToMini}
+                miniToOrig={miniToOrig}
                 lyricsAreLoading={lyricsAreLoading}
                 lyricsAreLoaded={lyricsAreLoaded}
-                wordRefs={this.wordRefs}
+                wordRefs={wordRefs}
               />
             </Col>
             {/* lyrics */}

@@ -234,42 +234,70 @@ class LyricsGrid extends Component {
       groupRefs.push(g);
     });
 
+    const { wordRefs, origToMini, miniToOrig } = this.props;
     // mouseover -> draw rectangle for every group and highlight words
-    var onMouseOverHandler = (ref, g_i, event) => {
+    var onMouseOverHandler = (ref, points, event) => {
       ref.classList.add('selected');
       // highlight all words corresponding to group
-      let points = groups[g_i];
       points.forEach((point) => {
-        let refsToHighlight = point.ref; // rn only 2 points (halves) but later highlight all same words
-        refsToHighlight.forEach((pTH) => {
+        /*
+         * Highlight points
+         */
+        let pointsToHighlight = point.ref; // rn only 2 points (halves) but later highlight all same words
+        pointsToHighlight.forEach((pTH) => {
           pTH.classList.add('selected');
+        });
+        /* Highlight corresponding lyrics when hover over groups
+         * Each point has two lyric references (row and column)
+         */
+        let lyricsToHighlight = [
+          wordRefs[miniToOrig[point.r].o_i],
+          wordRefs[miniToOrig[point.c].o_i],
+        ];
+        lyricsToHighlight.forEach((lTH) => {
+          lTH.classList.add('selected');
         });
       });
     };
-    var onMouseOutHandler = (ref, g_i, event) => {
+    var onMouseOutHandler = (ref, points, event) => {
       ref.classList.remove('selected');
       // highlight all words corresponding to group
-      let points = groups[g_i];
       points.forEach((point) => {
-        let refsToHighlight = point.ref; // rn only 2 points (halves) but later highlight all same words
-        refsToHighlight.forEach((pTH) => {
+        /*
+         * Unhighlight points
+         */
+        let pointsToHighlight = point.ref; // rn only 2 points (halves) but later highlight all same words
+        pointsToHighlight.forEach((pTH) => {
           pTH.classList.remove('selected');
+        });
+        /* Unighlight corresponding lyrics when mouse leaves over groups
+         */
+        let lyricsToHighlight = [
+          wordRefs[miniToOrig[point.r].o_i],
+          wordRefs[miniToOrig[point.c].o_i],
+        ];
+        lyricsToHighlight.forEach((lTH) => {
+          lTH.classList.remove('selected');
         });
       });
     };
 
-    const { wordRefs, origToMini } = this.props;
     console.log(wordRefs);
     console.log(origToMini);
+    console.log(miniToOrig);
     console.log(groups);
     console.log(groupRefs);
     console.log(matrix);
     // hoverify each group
     for (var g_i in groupRefs) {
+      if (g_i === 0) {
+        continue;
+      }
       let island = groupRefs[g_i];
+      let points = groups[g_i];
       // group hover
-      island.onmouseover = (e) => onMouseOverHandler(island, g_i, e);
-      island.onmouseout = (e) => onMouseOutHandler(island, g_i, e);
+      island.onmouseover = (e) => onMouseOverHandler(island, points, e);
+      island.onmouseout = (e) => onMouseOutHandler(island, points, e);
     }
 
     // resize to final size
@@ -298,6 +326,7 @@ LyricsGrid.propTypes = {
   lyricsCorpus: PropTypes.array.isRequired,
   wordRefs: PropTypes.array.isRequired,
   origToMini: PropTypes.object.isRequired,
+  miniToOrig: PropTypes.object.isRequired,
 };
 
 export { LyricsGrid };

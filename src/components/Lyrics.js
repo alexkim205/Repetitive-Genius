@@ -10,6 +10,7 @@ const LyricsWrapper = styled.div`
     color: white;
     &.selected {
       background-color: yellow;
+      color: red;
     }
   }
 `;

@@ -16,6 +16,7 @@ class Graph extends Component {
     const {
       lyricsCorpus,
       origToMini,
+      miniToOrig,
       lyricsAreLoading,
       lyricsAreLoaded,
       wordRefs,
@@ -30,6 +31,7 @@ class Graph extends Component {
             lyricsCorpus={lyricsCorpus}
             wordRefs={wordRefs}
             origToMini={origToMini}
+            miniToOrig={miniToOrig}
           />
         </Loading>
       </GraphWrapper>
@@ -44,6 +46,7 @@ Graph.propTypes = {
   lyricsAreLoaded: PropTypes.bool.isRequired,
   wordRefs: PropTypes.array.isRequired,
   origToMini: PropTypes.object.isRequired,
+  miniToOrig: PropTypes.object.isRequired,
 };
 
 export { Graph };
