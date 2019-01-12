@@ -1,4 +1,4 @@
-import React, { Component} from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { Loading, CustomLoader, LyricsGrid } from './';
@@ -13,14 +13,24 @@ const GraphWrapper = styled.div`
 
 class Graph extends Component {
   render() {
-    const { lyricsCorpus, lyricsAreLoading, lyricsAreLoaded } = this.props;
+    const {
+      lyricsCorpus,
+      origToMini,
+      lyricsAreLoading,
+      lyricsAreLoaded,
+      wordRefs,
+    } = this.props;
     return (
       <GraphWrapper>
         <Loading
           isLoading={lyricsAreLoading}
           isLoaded={lyricsAreLoaded}
-          loader={CustomLoader}>
-          <LyricsGrid lyricsCorpus={lyricsCorpus} />
+          loader={<CustomLoader />}>
+          <LyricsGrid
+            lyricsCorpus={lyricsCorpus}
+            wordRefs={wordRefs}
+            origToMini={origToMini}
+          />
         </Loading>
       </GraphWrapper>
     );
@@ -32,6 +42,8 @@ Graph.propTypes = {
   lyricsCorpus: PropTypes.array.isRequired,
   lyricsAreLoading: PropTypes.bool.isRequired,
   lyricsAreLoaded: PropTypes.bool.isRequired,
+  wordRefs: PropTypes.array.isRequired,
+  origToMini: PropTypes.object.isRequired,
 };
 
 export { Graph };

@@ -2,9 +2,31 @@ import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
+import { update } from 'timm';
 
 const StyledSvg = styled.svg`
   width: 100%;
+  g {
+    rect {
+      -webkit-transform: scale(1);
+      -webkit-transform-origin: 50% 50%;
+      -webkit-transition: 0.3s;
+      transform: scale(1);
+      transform-origin: 50% 50%;
+      transition: 0.3s;
+      transform-box: fill-box;
+    }
+    &.selected {
+      rect {
+        -webkit-transform: scale(5);
+        -webkit-transform-origin: 50% 50%;
+        -webkit-transition: 0.3s;
+        transform: scale(5);
+        transform-origin: 50% 50%;
+        transition: 0.3s;
+      }
+    }
+  }
 `;
 
 class LyricsGrid extends Component {
@@ -95,7 +117,6 @@ class LyricsGrid extends Component {
 
     while (toVisit.length > 0) {
       currNode = toVisit.pop();
-      if (currNode.r < 10 && currNode.c < 10) console.log(currNode);
       visited[currNode.r][currNode.c] = 1; // mark visited
 
       // Add neighboring nodes that are not empty
@@ -125,7 +146,6 @@ class LyricsGrid extends Component {
     for (let _i = 0; _i < matrix.length; _i++) {
       visited[_i] = new Array(matrix.length).fill(0);
     }
-    console.log(visited);
     for (let row = 0; row < matrix.length; row++) {
       for (let col = row; col < matrix.length; col++) {
         // Visit unvisited cells that aren't empty
@@ -141,7 +161,6 @@ class LyricsGrid extends Component {
   }
 
   drawGrid() {
-    console.log('draw grid called');
     const node = this.svgRef.current;
     const { matrix, lyricsCorpus, count, groups } = this.state;
 
@@ -165,7 +184,7 @@ class LyricsGrid extends Component {
     svg.setAttribute('width', width);
     svg.setAttribute('height', height);
 
-    const _makePoint = (n, v) => {
+    const _makeElement = (n, v) => {
       n = document.createElementNS(svgNS, n);
       for (var p in v) {
         n.setAttributeNS(null, p, v[p]);
@@ -175,29 +194,68 @@ class LyricsGrid extends Component {
 
     // background color
     svg.appendChild(
-      _makePoint('rect', { width: '100%', height: '100%', fill: '#000' }),
+      _makeElement('rect', { width: '100%', height: '100%', fill: '#000' }),
     );
 
-    // draw each pixel
-    matrix.forEach((row) => {
-      row.forEach((col) => {
-        const { r, c, i } = col;
-        if (i === 0) return;
-        svg.appendChild(
-          _makePoint('rect', {
-            x: _x(r),
-            y: _x(c),
-            width: pixel,
-            height: pixel,
-            fill: _c(i),
-          }),
-        );
+    // draw each pixel by group
+    var groupRefs = [];
+    groups.forEach((group) => {
+      if (group.length === 0) {
+        groupRefs.push(null);
+        return;
+      }
+      // make group
+      var g = _makeElement('g', { class: 'island' });
+      group.forEach((point) => {
+        const { r, c, i } = point;
+        let n = _makeElement('rect', {
+          x: _x(r),
+          y: _x(c),
+          row: r,
+          col: c,
+          width: pixel,
+          height: pixel,
+          fill: _c(i),
+        });
+        // append to group
+        g.appendChild(n);
+        // keep refs of all pixels and groups
+        matrix[r][c]['ref'] = n;
+        matrix[r][c]['groupRef'] = g;
       });
+      // append group to svg
+      svg.appendChild(g);
+      groupRefs.push(g);
     });
 
     // mouseover -> draw rectangle for every group and highlight words
-    console.log(groups)
+    var onMouseOverHandler = (ref, event) => {
+      ref.classList.add('selected');
+    };
+    var onMouseOutHandler = (ref, event) => {
+      ref.classList.remove('selected');
+    };
 
+    const { wordRefs, origToMini } = this.props;
+    console.log(wordRefs);
+    console.log(origToMini);
+    console.log(groups);
+    console.log(groupRefs);
+    console.log(matrix);
+    // hoverify each group
+    for (var g_i in groupRefs) {
+      let island = groupRefs[g_i];
+      island.onmouseover = (e) => onMouseOverHandler(island, e);
+      island.onmouseout = (e) => onMouseOutHandler(island, e);
+      // for (var point_i in pointsInGroup) {
+      //   let point = pointsInGroup[point_i]
+      //   let ref = matrix[point.r][point.c].ref;
+      //   ref.onmouseenter = (e) => onMouseEnterHandler(ref, e);
+      //   ref.onmouseleave = (e) => onMouseLeaveHandler(ref, e);
+      //   // matrix[point.r][point.c].ref.onmouseleave = onMouseLeaveHandler;
+      //   // matrix[point.r][point.c].ref.onmousemove = onMouseMoveHandler;
+      // }
+    }
 
     // resize to final size
     svg.setAttribute('width', side);
@@ -223,6 +281,8 @@ class LyricsGrid extends Component {
 
 LyricsGrid.propTypes = {
   lyricsCorpus: PropTypes.array.isRequired,
+  wordRefs: PropTypes.array.isRequired,
+  origToMini: PropTypes.object.isRequired,
 };
 
 export { LyricsGrid };

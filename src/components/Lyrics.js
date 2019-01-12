@@ -19,19 +19,21 @@ class Lyrics extends Component {
       lyricsCorpus,
       lyricsAreLoading,
       lyricsAreLoaded,
+      createRef
     } = this.props;
+
     return (
       <LyricsWrapper>
         <Loading
           isLoading={lyricsAreLoading}
           isLoaded={lyricsAreLoaded}
-          loader={CustomLoader}>
+          loader={<CustomLoader />}>
           <Fragment>
             {lyrics &&
               lyrics.map((verse, i) => (
                 <Fragment key={i}>
                   {verse.split(' ').map((word, i) => (
-                    <span>{word} </span>
+                    <span ref={createRef} key={i}>{word} </span>
                   ))}
                   <br />
                 </Fragment>
@@ -48,6 +50,7 @@ Lyrics.propTypes = {
   lyricsCorpus: PropTypes.array.isRequired,
   lyricsAreLoading: PropTypes.bool.isRequired,
   lyricsAreLoaded: PropTypes.bool.isRequired,
+  createRef: PropTypes.func.isRequired,
 };
 
 export { Lyrics };

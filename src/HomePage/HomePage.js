@@ -26,17 +26,21 @@ class HomePage extends Component {
       queriedSong: null,
       lyrics: [],
       lyricsCorpus: [],
+      origToMini: {}, // map original to slimmed lyrics; used for mapping grid to lyrics
       url: '',
       lyricsAreLoading: false,
       lyricsAreLoaded: false,
       songInfoIsLoading: false,
       songInfoIsLoaded: false,
+      refs: [],
       typing: false,
       typingTimeout: 0,
       error: null,
     };
+    this.wordRefs = [];
 
     this.getSongList = this.getSongList.bind(this);
+    this.createWordRef = this.createWordRef.bind(this);
     this._handleInputChange = this._handleInputChange.bind(this);
     this._handleChange = this._handleChange.bind(this);
   }
@@ -132,10 +136,44 @@ class HomePage extends Component {
           .trim() // trim beginning and end of string
           .split(/\s+/); // split by whitespace
         // .slice(0, 50);
+        console.log(lyrics.length);
+        console.log(lyricsCorpus.length);
+
+        let corpus = lyrics.join(' ').split(' ');
+        var origToMini = {}; // map original to slimmed lyrics
+        var shortCounter = 0; // orig index -> shortCounter
+        var bracketIsOpen = false;
+        for (let i = 0; i < corpus.length; i++) {
+          const word = corpus[i];
+          if (/(?=.*\[)(?=.*\])/.test(word)) {
+            // both brackets exist [Chorus]
+            continue;
+          } else if (/\[/.test(word)) {
+            // open brackets [Hook
+            bracketIsOpen = true;
+            continue;
+          } else if (/\]/.test(word)) {
+            // bracket is closed Bastille]
+            bracketIsOpen = false;
+            continue;
+          } else if (bracketIsOpen || word === '') {
+            // still in bracket, 1:
+            // OR new line
+            continue;
+          }
+          origToMini[i] = {
+            original: word,
+            minified: lyricsCorpus[shortCounter],
+            o_i: i,
+            m_i: shortCounter++,
+          };
+        }
+
         _this.setState({
           error: null,
           lyrics,
           lyricsCorpus,
+          origToMini,
           lyricsAreLoading: false,
           lyricsAreLoaded: true,
         });
@@ -156,10 +194,15 @@ class HomePage extends Component {
     return query;
   }
 
+  createWordRef = (ref) => {
+    this.wordRefs.push(ref);
+  };
+
   render() {
     const {
       lyrics,
       lyricsCorpus,
+      origToMini,
       lyricsAreLoading,
       lyricsAreLoaded,
       songInfoIsLoading,
@@ -210,8 +253,10 @@ class HomePage extends Component {
               <Graph
                 lyrics={lyrics}
                 lyricsCorpus={lyricsCorpus}
+                origToMini={origToMini}
                 lyricsAreLoading={lyricsAreLoading}
                 lyricsAreLoaded={lyricsAreLoaded}
+                wordRefs={this.wordRefs}
               />
             </Col>
             {/* lyrics */}
@@ -221,6 +266,7 @@ class HomePage extends Component {
                 lyricsCorpus={lyricsCorpus}
                 lyricsAreLoading={lyricsAreLoading}
                 lyricsAreLoaded={lyricsAreLoaded}
+                createRef={this.createWordRef}
               />
             </Col>
           </Row>
