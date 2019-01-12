@@ -10,20 +10,16 @@ const StyledSvg = styled.svg`
     rect {
       -webkit-transform: scale(1);
       -webkit-transform-origin: 50% 50%;
-      -webkit-transition: 0.3s;
+      -webkit-transition: 0.1s;
       transform: scale(1);
       transform-origin: 50% 50%;
-      transition: 0.3s;
+      transition: 0.1s;
       transform-box: fill-box;
     }
     &.selected {
       rect {
         -webkit-transform: scale(5);
-        -webkit-transform-origin: 50% 50%;
-        -webkit-transition: 0.3s;
         transform: scale(5);
-        transform-origin: 50% 50%;
-        transition: 0.3s;
       }
     }
   }
@@ -208,7 +204,7 @@ class LyricsGrid extends Component {
       var g = _makeElement('g', { class: 'island' });
       group.forEach((point) => {
         const { r, c, i } = point;
-        let n = _makeElement('rect', {
+        let n1 = _makeElement('rect', {
           x: _x(r),
           y: _x(c),
           row: r,
@@ -217,10 +213,20 @@ class LyricsGrid extends Component {
           height: pixel,
           fill: _c(i),
         });
+        let n2 = _makeElement('rect', {
+          x: _x(c),
+          y: _x(r),
+          row: c,
+          col: r,
+          width: pixel,
+          height: pixel,
+          fill: _c(i),
+        });
         // append to group
-        g.appendChild(n);
+        g.appendChild(n1);
+        g.appendChild(n2);
         // keep refs of all pixels and groups
-        matrix[r][c]['ref'] = n;
+        matrix[r][c]['ref'] = [n1, n2];
         matrix[r][c]['groupRef'] = g;
       });
       // append group to svg
@@ -229,11 +235,27 @@ class LyricsGrid extends Component {
     });
 
     // mouseover -> draw rectangle for every group and highlight words
-    var onMouseOverHandler = (ref, event) => {
+    var onMouseOverHandler = (ref, g_i, event) => {
       ref.classList.add('selected');
+      // highlight all words corresponding to group
+      let points = groups[g_i];
+      points.forEach((point) => {
+        let refsToHighlight = point.ref; // rn only 2 points (halves) but later highlight all same words
+        refsToHighlight.forEach((pTH) => {
+          pTH.classList.add('selected');
+        });
+      });
     };
-    var onMouseOutHandler = (ref, event) => {
+    var onMouseOutHandler = (ref, g_i, event) => {
       ref.classList.remove('selected');
+      // highlight all words corresponding to group
+      let points = groups[g_i];
+      points.forEach((point) => {
+        let refsToHighlight = point.ref; // rn only 2 points (halves) but later highlight all same words
+        refsToHighlight.forEach((pTH) => {
+          pTH.classList.remove('selected');
+        });
+      });
     };
 
     const { wordRefs, origToMini } = this.props;
@@ -245,16 +267,9 @@ class LyricsGrid extends Component {
     // hoverify each group
     for (var g_i in groupRefs) {
       let island = groupRefs[g_i];
-      island.onmouseover = (e) => onMouseOverHandler(island, e);
-      island.onmouseout = (e) => onMouseOutHandler(island, e);
-      // for (var point_i in pointsInGroup) {
-      //   let point = pointsInGroup[point_i]
-      //   let ref = matrix[point.r][point.c].ref;
-      //   ref.onmouseenter = (e) => onMouseEnterHandler(ref, e);
-      //   ref.onmouseleave = (e) => onMouseLeaveHandler(ref, e);
-      //   // matrix[point.r][point.c].ref.onmouseleave = onMouseLeaveHandler;
-      //   // matrix[point.r][point.c].ref.onmousemove = onMouseMoveHandler;
-      // }
+      // group hover
+      island.onmouseover = (e) => onMouseOverHandler(island, g_i, e);
+      island.onmouseout = (e) => onMouseOutHandler(island, g_i, e);
     }
 
     // resize to final size

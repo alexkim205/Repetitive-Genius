@@ -6,20 +6,22 @@ import { Loading, CustomLoader } from './';
 const LyricsWrapper = styled.div`
   background-color: #4285f4;
   padding: 1em;
-  code {
+  span {
     color: white;
+    &.selected {
+      background-color: yellow;
+    }
   }
 `;
 
 class Lyrics extends Component {
-
   render() {
     const {
       lyrics,
       lyricsCorpus,
       lyricsAreLoading,
       lyricsAreLoaded,
-      createRef
+      createRef,
     } = this.props;
 
     return (
@@ -33,7 +35,11 @@ class Lyrics extends Component {
               lyrics.map((verse, i) => (
                 <Fragment key={i}>
                   {verse.split(' ').map((word, i) => (
-                    <span ref={createRef} key={i}>{word} </span>
+                    <Fragment>
+                      <span ref={createRef} key={i}>
+                        {word}
+                      </span>{' '}
+                    </Fragment>
                   ))}
                   <br />
                 </Fragment>
