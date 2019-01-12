@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import AsyncSelect from 'react-select/lib/Async';
 import Loader from 'react-loader-spinner';
 import { Container, Row, Col, Jumbotron } from 'reactstrap';
-import { SongTile, LyricsGrid, Loading } from '../components';
+import { SongTile, Lyrics, Graph } from '../components';
 
 import { Genius, getSongLyrics } from '../_services';
 
@@ -17,23 +17,6 @@ const SearchContainer = styled.div`
   margin: 0 auto;
   text-align: left;
 `;
-const Graph = styled.div`
-  background-color: #aa66cc;
-  padding: 1em;
-  code {
-    color: white;
-  }
-`;
-const Lyrics = styled.div`
-  background-color: #4285f4;
-  padding: 1em;
-  code {
-    color: white;
-  }
-`;
-const CenteredLoader = styled(Loader)`
-  margin: 0 auto;
-`;
 
 class HomePage extends Component {
   constructor(props) {
@@ -42,6 +25,7 @@ class HomePage extends Component {
       query: '',
       queriedSong: null,
       lyrics: [],
+      lyricsCorpus: [],
       url: '',
       lyricsAreLoading: false,
       lyricsAreLoaded: false,
@@ -139,9 +123,19 @@ class HomePage extends Component {
     _this.setState({ lyricsAreLoading: true });
     getSongLyrics(selected.url)
       .then((lyrics) => {
+        // parse lyrics
+        let lyricsCorpus = lyrics
+          .join(' ') // join string
+          .replace(/ *\[[^\]]*]|[()]/g, '') // remove everything btwn [] or remove just ()'s
+          .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '') // remove punctuation
+          .toLowerCase() // all words to lc
+          .trim() // trim beginning and end of string
+          .split(/\s+/); // split by whitespace
+        // .slice(0, 50);
         _this.setState({
           error: null,
           lyrics,
+          lyricsCorpus,
           lyricsAreLoading: false,
           lyricsAreLoaded: true,
         });
@@ -165,6 +159,7 @@ class HomePage extends Component {
   render() {
     const {
       lyrics,
+      lyricsCorpus,
       lyricsAreLoading,
       lyricsAreLoaded,
       songInfoIsLoading,
@@ -212,47 +207,21 @@ class HomePage extends Component {
           <Row>
             {/* graph */}
             <Col lg={12} xl={6}>
-              <Graph>
-                <Loading
-                  isLoading={lyricsAreLoading}
-                  isLoaded={lyricsAreLoaded}
-                  loader={
-                    <CenteredLoader
-                      type='ThreeDots'
-                      color='white'
-                      height='100'
-                      width='100'
-                    />
-                  }>
-                  <LyricsGrid lyrics={lyrics} />
-                </Loading>
-              </Graph>
+              <Graph
+                lyrics={lyrics}
+                lyricsCorpus={lyricsCorpus}
+                lyricsAreLoading={lyricsAreLoading}
+                lyricsAreLoaded={lyricsAreLoaded}
+              />
             </Col>
             {/* lyrics */}
             <Col lg={12} xl={6}>
-              <Lyrics>
-                <Loading
-                  isLoading={lyricsAreLoading}
-                  isLoaded={lyricsAreLoaded}
-                  loader={
-                    <CenteredLoader
-                      type='ThreeDots'
-                      color='white'
-                      height='100'
-                      width='100'
-                    />
-                  }>
-                  <Fragment>
-                    {lyrics &&
-                      lyrics.map((verse, i) => (
-                        <Fragment key={i}>
-                          <code>{verse}</code>
-                          <br />
-                        </Fragment>
-                      ))}
-                  </Fragment>
-                </Loading>
-              </Lyrics>
+              <Lyrics
+                lyrics={lyrics}
+                lyricsCorpus={lyricsCorpus}
+                lyricsAreLoading={lyricsAreLoading}
+                lyricsAreLoaded={lyricsAreLoaded}
+              />
             </Col>
           </Row>
         </Container>

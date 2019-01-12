@@ -11,9 +11,9 @@ class LyricsGrid extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      lyricsCorpus: null,
       count: null,
       matrix: null,
+      groups: null,
     };
     this.svgRef = React.createRef();
 
@@ -32,17 +32,7 @@ class LyricsGrid extends Component {
     // https://bost.ocks.org/mike/miserables/
     // unique words count
     // topical analysis
-    const { lyrics } = this.props;
-
-    // parse lyrics
-    const lyricsCorpus = lyrics
-      .join(' ') // join string
-      .replace(/ *\[[^\]]*]|[()]/g, '') // remove everything btwn [] or remove just ()'s
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '') // remove punctuation
-      .toLowerCase() // all words to lc
-      .trim() // trim beginning and end of string
-      .split(/\s+/) // split by whitespace
-      // .slice(0, 50);
+    const { lyricsCorpus } = this.props;
 
     // count and put in dictionary
     var count = {};
@@ -105,7 +95,7 @@ class LyricsGrid extends Component {
 
     while (toVisit.length > 0) {
       currNode = toVisit.pop();
-      if (currNode.r < 10 && currNode.c < 10) console.log(currNode)
+      if (currNode.r < 10 && currNode.c < 10) console.log(currNode);
       visited[currNode.r][currNode.c] = 1; // mark visited
 
       // Add neighboring nodes that are not empty
@@ -116,8 +106,7 @@ class LyricsGrid extends Component {
           // within boundaries
           if (visited[x][y] === 0 && matrix[x][y].i !== 0) {
             // not visited and not empty
-            // add group index to data
-            matrix[x][y].g = groupIndex++;
+            matrix[x][y].g = groupIndex++; // add group index to data
             group.push(matrix[x][y]); // add node to island
             toVisit.push(matrix[x][y]); // visit neighbors of this node too
           }
@@ -136,24 +125,25 @@ class LyricsGrid extends Component {
     for (let _i = 0; _i < matrix.length; _i++) {
       visited[_i] = new Array(matrix.length).fill(0);
     }
-    console.log(visited)
+    console.log(visited);
     for (let row = 0; row < matrix.length; row++) {
       for (let col = row; col < matrix.length; col++) {
         // Visit unvisited cells that aren't empty
         if (visited[row][col] === 0 && matrix[row][col].i !== 0) {
           var group = [matrix[row][col]];
-          this._DFS(row, col, visited, group); // go off and find an island!
+          this._DFS(row, col, visited, group, groupIndex); // go off and find an island!
           groups.push(group); // island has been found and visited
         }
       }
     }
-    console.log(groups);
+
+    this.setState({ groups });
   }
 
   drawGrid() {
     console.log('draw grid called');
     const node = this.svgRef.current;
-    const { matrix, lyricsCorpus, count } = this.state;
+    const { matrix, lyricsCorpus, count, groups } = this.state;
 
     var side = 800, // final side length
       pixel = 2,
@@ -204,6 +194,11 @@ class LyricsGrid extends Component {
         );
       });
     });
+
+    // mouseover -> draw rectangle for every group and highlight words
+    console.log(groups)
+
+
     // resize to final size
     svg.setAttribute('width', side);
     svg.setAttribute('height', side);
@@ -227,7 +222,7 @@ class LyricsGrid extends Component {
 }
 
 LyricsGrid.propTypes = {
-  lyrics: PropTypes.array.isRequired,
+  lyricsCorpus: PropTypes.array.isRequired,
 };
 
 export { LyricsGrid };
