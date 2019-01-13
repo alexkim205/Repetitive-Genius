@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
+import svgPanZoom from 'svg-pan-zoom';
 import { getDarkColor } from '../_styles/generate-color';
 import { processData } from '../_datamunge/process-data';
 
@@ -177,12 +178,12 @@ class LyricsGrid extends Component {
       });
     };
 
-    console.log(wordRefs);
-    console.log(origToMini);
-    console.log(miniToOrig);
-    console.log(groups);
-    console.log(groupRefs);
-    console.log(matrix);
+    // console.log(wordRefs);
+    // console.log(origToMini);
+    // console.log(miniToOrig);
+    // console.log(groups);
+    // console.log(groupRefs);
+    // console.log(matrix);
     // hoverify each group
     for (var g_i in groups) {
       if (g_i === 0) {
@@ -195,10 +196,17 @@ class LyricsGrid extends Component {
       island.onmouseout = (e) => onMouseOutHandler(island, points, e);
     }
 
+    // enable pan zoom
+    var panZoom = svgPanZoom(svg)
+
     // resize to final size
     // svg.setAttribute('width', side);
     // svg.setAttribute('height', side);
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+    panZoom.resize(); // update SVG cached size and controls positions
+    panZoom.fit();
+    panZoom.center();
   }
 
   componentDidMount() {
@@ -211,7 +219,7 @@ class LyricsGrid extends Component {
         return this.setAsyncState({ count, matrix, groups, colors });
       })
       .then(this.drawGrid)
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   }
 
   render() {

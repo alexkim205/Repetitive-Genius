@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import AsyncSelect from 'react-select/lib/Async';
-import Loader from 'react-loader-spinner';
 import { Container, Row, Col, Jumbotron } from 'reactstrap';
 import { SongTile, Lyrics, Graph } from '../components';
 
@@ -136,8 +135,6 @@ class HomePage extends Component {
           .trim() // trim beginning and end of string
           .split(/\s+/); // split by whitespace
         // .slice(0, 50);
-        console.log(lyrics.length);
-        console.log(lyricsCorpus.length);
 
         let corpus = lyrics.join(' ').split(' ');
         var origToMini = {}; // map original to slimmed lyrics
@@ -223,7 +220,6 @@ class HomePage extends Component {
       queriedSong,
       error,
     } = this.state;
-    console.log(miniToOrig);
 
     return (
       <Fragment>

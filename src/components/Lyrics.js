@@ -40,7 +40,7 @@ class Lyrics extends Component {
               lyrics.map((verse, i) => (
                 <Fragment key={i}>
                   {verse.split(' ').map((word, i) => (
-                    <Fragment>
+                    <Fragment key={i}>
                       <span ref={createRef} key={i}>
                         {word}
                       </span>{' '}

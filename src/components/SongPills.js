@@ -21,7 +21,6 @@ const abbreviateNumber = (number) => {
   var suffix = SI_SYMBOL[tier];
   var scale = Math.pow(10, tier * 3);
   var scaled = number / scale;
-  // console.log(scaled.toFixed(1) + suffix);
   return scaled.toFixed(1) + suffix;
 };
 

@@ -21,7 +21,6 @@ class Graph extends Component {
       lyricsAreLoaded,
       wordRefs,
     } = this.props;
-    console.log(miniToOrig)
     return (
       <GraphWrapper>
         <Loading

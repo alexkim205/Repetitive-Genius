@@ -192,8 +192,6 @@ const _colors = (lyricsCorpus, groups) => {
       }
     });
   });
-  console.log('COLORS');
-  console.log(colors);
   return colors;
 };
 

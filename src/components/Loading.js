@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 const Loading = (props) => {
   const { isLoading, isLoaded, loader } = props;
-  console.log(!isLoading && isLoaded);
   return (
     <Fragment>
       {!isLoading && isLoaded ? (
