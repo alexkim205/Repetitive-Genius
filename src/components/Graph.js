@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { Loading, CustomLoader, LyricsGrid } from './';
+import { Loading, DarkLoader, LyricsGrid } from './';
 
 const GraphWrapper = styled.div`
-  background-color: #aa66cc;
-  padding: 1em;
-  code {
-    color: white;
-  }
+  // background-color: ;
+  // padding: 1em;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  overflow: hidden;
 `;
 
 class Graph extends Component {
@@ -21,12 +21,13 @@ class Graph extends Component {
       lyricsAreLoaded,
       wordRefs,
     } = this.props;
+    console.log(miniToOrig)
     return (
       <GraphWrapper>
         <Loading
           isLoading={lyricsAreLoading}
           isLoaded={lyricsAreLoaded}
-          loader={<CustomLoader />}>
+          loader={<DarkLoader />}>
           <LyricsGrid
             lyricsCorpus={lyricsCorpus}
             wordRefs={wordRefs}

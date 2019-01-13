@@ -1,12 +1,16 @@
 import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { Loading, CustomLoader } from './';
+import { Loading, LightLoader } from './';
 
 const LyricsWrapper = styled.div`
   background-color: #4285f4;
-  padding: 1em;
+  padding: 2em;
+  column-count: 2;
+  column-gap: 1em;
+  font-size: 0.8em;
   span {
+    // font-family: 'Source Code Pro', monospace;
     color: white;
     &.selected {
       background-color: yellow;
@@ -30,7 +34,7 @@ class Lyrics extends Component {
         <Loading
           isLoading={lyricsAreLoading}
           isLoaded={lyricsAreLoaded}
-          loader={<CustomLoader />}>
+          loader={<LightLoader />}>
           <Fragment>
             {lyrics &&
               lyrics.map((verse, i) => (

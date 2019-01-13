@@ -2,7 +2,8 @@ import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
-import { update } from 'timm';
+import { getDarkColor } from '../_styles/generate-color';
+import { processData } from '../_datamunge/process-data';
 
 const StyledSvg = styled.svg`
   width: 100%;
@@ -10,10 +11,10 @@ const StyledSvg = styled.svg`
     rect {
       -webkit-transform: scale(1);
       -webkit-transform-origin: 50% 50%;
-      -webkit-transition: 0.1s;
+      // -webkit-transition: 0.1s;
       transform: scale(1);
       transform-origin: 50% 50%;
-      transition: 0.1s;
+      // transition: 0.1s;
       transform-box: fill-box;
     }
     &.selected {
@@ -32,133 +33,21 @@ class LyricsGrid extends Component {
       count: null,
       matrix: null,
       groups: null,
+      colors: null,
     };
     this.svgRef = React.createRef();
 
     this.setAsyncState = this.setAsyncState.bind(this);
-    this.processData = this.processData.bind(this);
-    this._DFS = this._DFS.bind(this);
-    this.findIslands = this.findIslands.bind(this);
     this.drawGrid = this.drawGrid.bind(this);
   }
 
   setAsyncState = (newState) =>
     new Promise((resolve) => this.setState(newState, () => resolve()));
 
-  processData() {
-    // https://datavizcatalogue.com/methods/gantt_chart.html
-    // https://bost.ocks.org/mike/miserables/
-    // unique words count
-    // topical analysis
-    const { lyricsCorpus } = this.props;
-
-    // count and put in dictionary
-    var count = {};
-    var uniqueIndex = 1;
-    for (let i = 0; i < lyricsCorpus.length; i++) {
-      count[lyricsCorpus[i]] = {
-        index: uniqueIndex++,
-        count: count[lyricsCorpus[i]]
-          ? parseInt(count[lyricsCorpus[i]]) + 1
-          : 0,
-      };
-    }
-
-    /*
-        [c, a, b, c]
-      c[[3,0,0,3],
-      a [0,1,0,0],
-      b [0,0,2,0],
-      c [3,1,0,3]]
-    */
-    // build empty matrix
-    var matrix = [];
-    for (let _i = 0; _i < lyricsCorpus.length; _i++) {
-      matrix[_i] = new Array(lyricsCorpus.length);
-    }
-
-    // populate matrix
-    for (let row = 0; row < lyricsCorpus.length; row++) {
-      for (let col = row; col < lyricsCorpus.length; col++) {
-        let index = 0;
-        if (lyricsCorpus[row] === lyricsCorpus[col]) {
-          index = count[lyricsCorpus[row]].index;
-        }
-        // populate both halves
-        matrix[row][col] = {
-          r: row,
-          c: col,
-          i: index,
-        };
-        matrix[col][row] = {
-          r: col,
-          c: row,
-          i: index,
-        };
-      }
-    }
-
-    return this.setAsyncState({ lyricsCorpus, matrix, count });
-  }
-
-  _DFS = (rootX, rootY, visited, group, groupIndex) => {
-    // DFS traverse to find all neighbors on island and mark visited
-    const { matrix } = this.state;
-    let toVisit = [matrix[rootX][rootY]],
-      currNode = null;
-
-    let rowNbr = [-1, -1, -1, 0, 0, 1, 1, 1], // relative neighboring indices
-      colNbr = [-1, 0, 1, -1, 1, -1, 0, 1],
-      side = visited.length;
-
-    while (toVisit.length > 0) {
-      currNode = toVisit.pop();
-      visited[currNode.r][currNode.c] = 1; // mark visited
-
-      // Add neighboring nodes that are not empty
-      for (let i = 0; i < 8; i++) {
-        let x = currNode.r + rowNbr[i];
-        let y = currNode.c + colNbr[i];
-        if (x >= 0 && x < side && y >= 0 && y < side) {
-          // within boundaries
-          if (visited[x][y] === 0 && matrix[x][y].i !== 0) {
-            // not visited and not empty
-            matrix[x][y].g = groupIndex++; // add group index to data
-            group.push(matrix[x][y]); // add node to island
-            toVisit.push(matrix[x][y]); // visit neighbors of this node too
-          }
-        }
-      }
-    }
-  };
-
-  findIslands() {
-    const { matrix } = this.state;
-    var groups = []; // all islands kept here
-    var groupIndex = 1;
-
-    // build empty matrix of visited nodes
-    var visited = [];
-    for (let _i = 0; _i < matrix.length; _i++) {
-      visited[_i] = new Array(matrix.length).fill(0);
-    }
-    for (let row = 0; row < matrix.length; row++) {
-      for (let col = row; col < matrix.length; col++) {
-        // Visit unvisited cells that aren't empty
-        if (visited[row][col] === 0 && matrix[row][col].i !== 0) {
-          var group = [matrix[row][col]];
-          this._DFS(row, col, visited, group, groupIndex); // go off and find an island!
-          groups.push(group); // island has been found and visited
-        }
-      }
-    }
-
-    this.setState({ groups });
-  }
-
   drawGrid() {
     const node = this.svgRef.current;
-    const { matrix, lyricsCorpus, count, groups } = this.state;
+    const { matrix, count, groups, colors } = this.state;
+    const { lyricsCorpus } = this.props;
 
     var side = 800, // final side length
       pixel = 2,
@@ -166,9 +55,11 @@ class LyricsGrid extends Component {
       height = 2 * lyricsCorpus.length;
 
     // Scales
+    var color_domain = Object.keys(colors).map((key, i) => colors[key]);
+    // color_domain.sort((a, b) => a - b);
     var _c = d3
       .scaleSequential(d3.interpolateRainbow)
-      .domain(Object.entries(count).map(([k, v]) => v.index));
+      .domain([0, Math.max(...color_domain)]);
     var _x = d3
       .scaleBand()
       .domain(d3.range(lyricsCorpus.length))
@@ -177,8 +68,6 @@ class LyricsGrid extends Component {
     // initialize svg
     var svg = node;
     var svgNS = svg.namespaceURI;
-    svg.setAttribute('width', width);
-    svg.setAttribute('height', height);
 
     const _makeElement = (n, v) => {
       n = document.createElementNS(svgNS, n);
@@ -200,35 +89,41 @@ class LyricsGrid extends Component {
         groupRefs.push(null);
         return;
       }
+      // make different color scale for each group
+      let domain = group.map((point) => point.i);
+
       // make group
       var g = _makeElement('g', { class: 'island' });
-      group.forEach((point) => {
-        const { r, c, i } = point;
-        let n1 = _makeElement('rect', {
-          x: _x(r),
-          y: _x(c),
-          row: r,
-          col: c,
-          width: pixel,
-          height: pixel,
-          fill: _c(i),
+      // if single word match, then don't draw
+      if (group.length !== 1) {
+        group.forEach((point) => {
+          const { r, c } = point;
+          let n1 = _makeElement('rect', {
+            x: _x(r),
+            y: _x(c),
+            row: r,
+            col: c,
+            width: pixel,
+            height: pixel,
+            fill: _c(colors[lyricsCorpus[r]]),
+          });
+          let n2 = _makeElement('rect', {
+            x: _x(c),
+            y: _x(r),
+            row: c,
+            col: r,
+            width: pixel,
+            height: pixel,
+            fill: _c(colors[lyricsCorpus[r]]),
+          });
+          // append to group
+          g.appendChild(n1);
+          g.appendChild(n2);
+          // keep refs of all pixels and groups
+          matrix[r][c]['ref'] = [n1, n2];
+          matrix[r][c]['groupRef'] = g;
         });
-        let n2 = _makeElement('rect', {
-          x: _x(c),
-          y: _x(r),
-          row: c,
-          col: r,
-          width: pixel,
-          height: pixel,
-          fill: _c(i),
-        });
-        // append to group
-        g.appendChild(n1);
-        g.appendChild(n2);
-        // keep refs of all pixels and groups
-        matrix[r][c]['ref'] = [n1, n2];
-        matrix[r][c]['groupRef'] = g;
-      });
+      }
       // append group to svg
       svg.appendChild(g);
       groupRefs.push(g);
@@ -289,7 +184,7 @@ class LyricsGrid extends Component {
     console.log(groupRefs);
     console.log(matrix);
     // hoverify each group
-    for (var g_i in groupRefs) {
+    for (var g_i in groups) {
       if (g_i === 0) {
         continue;
       }
@@ -301,16 +196,22 @@ class LyricsGrid extends Component {
     }
 
     // resize to final size
-    svg.setAttribute('width', side);
-    svg.setAttribute('height', side);
+    // svg.setAttribute('width', side);
+    // svg.setAttribute('height', side);
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
   }
 
   componentDidMount() {
-    this.processData() // process lyrics data into matrix
-      .then(this.findIslands)
-      .then(this.drawGrid) // draw grid
-      .catch((err) => console.error(err));
+    processData(this.props.lyricsCorpus)
+      .then(({ count, matrix, groups, colors }) => {
+        // this.setState({count, matrix, groups})
+        // console.log(count);
+        // console.log(matrix);
+        // console.log(groups);
+        return this.setAsyncState({ count, matrix, groups, colors });
+      })
+      .then(this.drawGrid)
+      .catch((err) => console.log(err));
   }
 
   render() {

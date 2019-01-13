@@ -174,7 +174,7 @@ class HomePage extends Component {
             o_i: i,
             m_i: shortCounter,
           };
-          shortCounter++
+          shortCounter++;
         }
 
         _this.setState({
@@ -204,8 +204,8 @@ class HomePage extends Component {
   }
 
   createWordRef = (ref) => {
-    var newArray = this.state.wordRefs
-    newArray.push(ref)
+    var newArray = this.state.wordRefs;
+    newArray.push(ref);
     this.setState({ wordRefs: newArray });
   };
 
@@ -223,6 +223,7 @@ class HomePage extends Component {
       queriedSong,
       error,
     } = this.state;
+    console.log(miniToOrig);
 
     return (
       <Fragment>
