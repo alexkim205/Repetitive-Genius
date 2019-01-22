@@ -24,7 +24,7 @@ class HomePage extends Component {
       query: '',
       queriedSong: null,
       lyrics: [],
-      lyricsCorpus: [],
+      lyricsParsed: [],
       wordRefs: [],
       url: '',
       // loading flags
@@ -127,19 +127,42 @@ class HomePage extends Component {
     getSongLyrics(selected.url)
       .then((lyrics) => {
         // parse lyrics
-        let lyricsCorpus = lyrics
-          .join(' ') // join string
-          .replace(/ *\[[^\]]*]|[()]/g, '') // remove everything btwn [] or remove just ()'s
-          .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '') // remove punctuation
-          .toLowerCase() // all words to lc
-          .trim() // trim beginning and end of string
-          .split(/\s+/); // split by whitespace
-        // .slice(0, 50);
+
+        let lyricsParsed = [];
+
+        // loop through each word and determine if it's relevant (not new line, in brackets)
+        // if relevant, assign it an id, if not -1
+        console.log(lyrics);
+        // lyrics.forEach
+        var orderID = 0; // id to keep order
+        var relID = 1; // id to assign only to relevant words
+        lyrics.forEach((line) => {
+          if (line.charAt(0) === '[') {
+            // irrelevant [Verse],[Chorus],etc...
+            lyricsParsed.push({ id: orderID++, word: line, isLyric: -1 });
+            return;
+          }
+          if (line === '') {
+            // irrelevant new line
+            lyricsParsed.push({ id: orderID++, word: '\n', isLyric: -1 });
+            return;
+          }
+          let byword = line.split(/(?!\(.*)\s(?![^(]*?\))/g); // split by parentheses and then by spaces
+          byword.forEach((word) => {
+            let strippedWord = word
+              .replace(/ *\[[^\]]*]|[()]/g, '') // ()[]
+              .replace(/[^a-zA-Z0-9]/g, '') // punctuation
+              .toLowerCase()
+              .trim();
+            lyricsParsed.push({ id: orderID++, word, isLyric: relID++, strippedWord });
+          });
+        });
+        console.log(lyricsParsed);
 
         _this.setState({
           error: null,
           lyrics,
-          lyricsCorpus,
+          lyricsParsed,
           wordRefs: [],
           lyricsAreLoading: false,
           lyricsAreLoaded: true,
@@ -168,8 +191,7 @@ class HomePage extends Component {
 
   render() {
     const {
-      lyrics,
-      lyricsCorpus,
+      lyricsParsed,
       wordRefs,
       lyricsAreLoading,
       lyricsAreLoaded,
@@ -178,8 +200,6 @@ class HomePage extends Component {
       queriedSong,
       error,
     } = this.state;
-
-    console.log(wordRefs.length);
 
     return (
       <Fragment>
@@ -232,13 +252,13 @@ class HomePage extends Component {
             </Col>
             {/* lyrics */}
             <Col lg={12} xl={6}>
-              <Lyrics
+              {/* <Lyrics
                 lyrics={lyrics}
                 lyricsCorpus={lyricsCorpus}
                 lyricsAreLoading={lyricsAreLoading}
                 lyricsAreLoaded={lyricsAreLoaded}
                 createRef={this.createWordRef}
-              />
+              /> */}
             </Col>
           </Row>
         </Container>
