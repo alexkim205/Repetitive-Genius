@@ -26,13 +26,13 @@ class HomePage extends Component {
       lyrics: [],
       lyricsCorpus: [],
       wordRefs: [],
-      origToMini: {}, // map original to slimmed lyrics; used for mapping grid to lyrics
       url: '',
+      // loading flags
       lyricsAreLoading: false,
       lyricsAreLoaded: false,
       songInfoIsLoading: false,
       songInfoIsLoaded: false,
-      refs: [],
+      // typing
       typing: false,
       typingTimeout: 0,
       error: null,
@@ -136,51 +136,11 @@ class HomePage extends Component {
           .split(/\s+/); // split by whitespace
         // .slice(0, 50);
 
-        let corpus = lyrics.join(' ').split(' ');
-        var origToMini = {}; // map original to slimmed lyrics
-        var miniToOrig = {}; // map original to slimmed lyrics
-        var shortCounter = 0; // orig index -> shortCounter
-        var bracketIsOpen = false;
-        for (let i = 0; i < corpus.length; i++) {
-          const word = corpus[i];
-          if (/(?=.*\[)(?=.*\])/.test(word)) {
-            // both brackets exist [Chorus]
-            continue;
-          } else if (/\[/.test(word)) {
-            // open brackets [Hook
-            bracketIsOpen = true;
-            continue;
-          } else if (/\]/.test(word)) {
-            // bracket is closed Bastille]
-            bracketIsOpen = false;
-            continue;
-          } else if (bracketIsOpen || word === '') {
-            // still in bracket, 1:
-            // OR new line
-            continue;
-          }
-          origToMini[i] = {
-            original: word,
-            minified: lyricsCorpus[shortCounter],
-            o_i: i,
-            m_i: shortCounter,
-          };
-          miniToOrig[shortCounter] = {
-            original: word,
-            minified: lyricsCorpus[shortCounter],
-            o_i: i,
-            m_i: shortCounter,
-          };
-          shortCounter++;
-        }
-
         _this.setState({
           error: null,
           lyrics,
           lyricsCorpus,
           wordRefs: [],
-          origToMini,
-          miniToOrig,
           lyricsAreLoading: false,
           lyricsAreLoaded: true,
         });
@@ -211,8 +171,6 @@ class HomePage extends Component {
       lyrics,
       lyricsCorpus,
       wordRefs,
-      origToMini,
-      miniToOrig,
       lyricsAreLoading,
       lyricsAreLoaded,
       songInfoIsLoading,
@@ -220,6 +178,8 @@ class HomePage extends Component {
       queriedSong,
       error,
     } = this.state;
+
+    console.log(wordRefs.length);
 
     return (
       <Fragment>
@@ -260,7 +220,7 @@ class HomePage extends Component {
           <Row>
             {/* graph */}
             <Col lg={12} xl={6}>
-              <Graph
+              {/* <Graph
                 lyrics={lyrics}
                 lyricsCorpus={lyricsCorpus}
                 origToMini={origToMini}
@@ -268,7 +228,7 @@ class HomePage extends Component {
                 lyricsAreLoading={lyricsAreLoading}
                 lyricsAreLoaded={lyricsAreLoaded}
                 wordRefs={wordRefs}
-              />
+              /> */}
             </Col>
             {/* lyrics */}
             <Col lg={12} xl={6}>

@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
-import svgPanZoom from 'svg-pan-zoom';
+// import svgPanZoom from 'svg-pan-zoom';
 import { getDarkColor } from '../_styles/generate-color';
 import { processData } from '../_datamunge/process-data';
 
@@ -197,16 +197,16 @@ class LyricsGrid extends Component {
     }
 
     // enable pan zoom
-    var panZoom = svgPanZoom(svg)
+    // var panZoom = svgPanZoom(svg)
 
     // resize to final size
     // svg.setAttribute('width', side);
     // svg.setAttribute('height', side);
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
-    panZoom.resize(); // update SVG cached size and controls positions
-    panZoom.fit();
-    panZoom.center();
+    // panZoom.resize(); // update SVG cached size and controls positions
+    // panZoom.fit();
+    // panZoom.center();
   }
 
   componentDidMount() {
